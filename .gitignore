@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+Express/node_modules/
+
+# Environment variables
+.env
+Express/.env
+
+# Uploads
+Express/uploads/*
+!Express/uploads/.gitkeep
+
+# Logs
+*.log
+npm-debug.log*
+
+# Angular build
+Frontend/dist/
+Frontend/.angular/
+
+Express/.gitignore
+Frontend/.gitignore

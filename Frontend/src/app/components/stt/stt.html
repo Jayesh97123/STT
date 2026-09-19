@@ -1,0 +1,53 @@
+<div class="stt-container">
+
+    <h2>Gemini Speech to Text</h2>
+
+    @if (!isRecording) {
+
+    <button type="button" (click)="startRecording()">
+
+        🎙️ Start Recording
+
+    </button>
+
+    } @else {
+
+    <button type="button" (click)="stopRecording()">
+
+        ⏹️ Stop Recording
+
+    </button>
+
+    }
+
+    @if (isRecording) {
+
+    <p>
+        🔴 Recording...
+    </p>
+
+    }
+
+    @if (isTranscribing) {
+
+    <p>
+        ⏳ Converting speech to text...
+    </p>
+
+    }
+
+    @if (transcript) {
+
+    <div class="transcript">
+
+        <h3>Transcript</h3>
+
+        <p>
+            {{ transcript }}
+        </p>
+
+    </div>
+
+    }
+
+</div>
