@@ -1,53 +1,178 @@
-<div class="stt-container">
+<div class="stt-page">
 
-    <h2>Gemini Speech to Text</h2>
+    <div class="ambient ambient-1"></div>
+    <div class="ambient ambient-2"></div>
 
-    @if (!isRecording) {
+    <div class="stt-card">
 
-    <button type="button" (click)="startRecording()">
+        <!-- Header -->
+        <div class="header">
 
-        🎙️ Start Recording
+            <div class="ai-badge">
+                <span class="status-dot"></span>
+                GEMINI AI
+            </div>
 
-    </button>
+            <h1>Speech <span>→</span> Text</h1>
 
-    } @else {
+            <p>
+                Speak naturally. Let AI turn your voice into text.
+            </p>
 
-    <button type="button" (click)="stopRecording()">
+        </div>
 
-        ⏹️ Stop Recording
 
-    </button>
+        <!-- Voice Visualizer -->
+        <div class="voice-orb" [class.recording]="isRecording()" [class.processing]="isTranscribing()">
 
-    }
+            <div class="orb-ring ring-1"></div>
+            <div class="orb-ring ring-2"></div>
+            <div class="orb-ring ring-3"></div>
 
-    @if (isRecording) {
+            <div class="orb-core">
 
-    <p>
-        🔴 Recording...
-    </p>
+                @if (isRecording()) {
 
-    }
+                <div class="mic-icon">
+                    🎙️
+                </div>
 
-    @if (isTranscribing) {
+                } @else if (isTranscribing()) {
 
-    <p>
-        ⏳ Converting speech to text...
-    </p>
+                <div class="processing-icon">
+                    ✦
+                </div>
 
-    }
+                } @else {
 
-    @if (transcript) {
+                <div class="mic-icon">
+                    🎙️
+                </div>
 
-    <div class="transcript">
+                }
 
-        <h3>Transcript</h3>
+            </div>
 
-        <p>
-            {{ transcript }}
-        </p>
+        </div>
+
+
+        <!-- Audio Wave -->
+        @if (isRecording()) {
+
+        <div class="waveform">
+
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+
+        </div>
+
+        }
+
+
+        <!-- Status -->
+        <div class="status">
+
+            @if (isRecording()) {
+
+            <div class="status-recording">
+                <span></span>
+                Listening...
+            </div>
+
+            <p>
+                Speak clearly into your microphone
+            </p>
+
+            } @else if (isTranscribing()) {
+
+            <div class="status-processing">
+                <span class="spinner"></span>
+                Processing with Gemini...
+            </div>
+
+            <p>
+                Converting your voice into text
+            </p>
+
+            } @else {
+
+            <div class="status-ready">
+                <span></span>
+                Ready to listen
+            </div>
+
+            <p>
+                Click the microphone and start speaking
+            </p>
+
+            }
+
+        </div>
+
+
+        <!-- Main Button -->
+        <button type="button" class="record-button" [class.stop]="isRecording()" [class.loading]="isTranscribing()"
+            [disabled]="isTranscribing()" (click)="isRecording() ? stopRecording() : startRecording()">
+
+            @if (isRecording()) {
+
+            <span class="button-icon">■</span>
+            <span>Stop Recording</span>
+
+            } @else if (isTranscribing()) {
+
+            <span class="button-icon">✦</span>
+            <span>Processing...</span>
+
+            } @else {
+
+            <span class="button-icon">🎙</span>
+            <span>Start Recording</span>
+
+            }
+
+        </button>
+
+
+        <!-- Transcript -->
+        @if (transcript()) {
+
+        <div class="transcript-card">
+
+            <div class="transcript-header">
+
+                <div>
+                    <span class="transcript-dot"></span>
+                    <span>TRANSCRIPT</span>
+                </div>
+
+                <span class="ai-label">
+                    AI GENERATED
+                </span>
+
+            </div>
+
+            <div class="transcript-content">
+                {{ transcript() }}
+            </div>
+
+        </div>
+
+        }
 
     </div>
-
-    }
 
 </div>

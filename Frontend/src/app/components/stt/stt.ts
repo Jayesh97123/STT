@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { SttService } from '../../services/stt.service';
 
 @Component({
@@ -12,15 +12,17 @@ export class SttComponent {
 
   audioChunks: Blob[] = [];
 
-  isRecording = false;
-  isTranscribing = false;
+  isRecording = signal(false);
+  isTranscribing = signal(false);
 
-  transcript = '';
+  transcript = signal('');
 
   constructor(private sttService: SttService) {}
 
   async startRecording() {
     try {
+      this.transcript.set('');
+
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
       });
@@ -50,9 +52,7 @@ export class SttComponent {
 
       this.mediaRecorder.start();
 
-      this.isRecording = true;
-
-      console.log('Recording started');
+      this.isRecording.set(true);
     } catch (error) {
       console.error('Microphone error:', error);
     }
@@ -62,28 +62,26 @@ export class SttComponent {
     if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
       this.mediaRecorder.stop();
 
-      this.isRecording = false;
-
-      console.log('Recording stopped');
+      this.isRecording.set(false);
     }
   }
 
   sendAudio(audioBlob: Blob) {
-    this.isTranscribing = true;
+    this.isTranscribing.set(true);
 
     this.sttService.transcribe(audioBlob).subscribe({
       next: (response) => {
-        console.log('Gemini response:', response);
+        console.log('Gemini response:', response, this.isTranscribing);
 
-        this.transcript = response.text;
+        this.transcript.set(response.text);
 
-        this.isTranscribing = false;
+        this.isTranscribing.set(false);
       },
 
       error: (error) => {
         console.error('STT error:', error);
 
-        this.isTranscribing = false;
+        this.isTranscribing.set(false);
       },
     });
   }
