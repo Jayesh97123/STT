@@ -2,9 +2,16 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+export interface ChatMessage {
+  speaker: string;
+  text: string;
+}
+
 export interface TranscriptionResponse {
   success: boolean;
   text: string;
+  speakerNames: Record<string, string>;
+  chat: ChatMessage[];
   message?: string;
   error?: string;
 }

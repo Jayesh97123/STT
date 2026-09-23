@@ -1,178 +1,327 @@
-<div class="stt-page">
+<div class="stt-container">
 
-    <div class="ambient ambient-1"></div>
-    <div class="ambient ambient-2"></div>
+    <!-- Header -->
 
-    <div class="stt-card">
+    <div class="header">
 
-        <!-- Header -->
-        <div class="header">
+        <div class="ai-badge">
+            <span class="ai-dot"></span>
+            GEMINI AI
+        </div>
 
-            <div class="ai-badge">
-                <span class="status-dot"></span>
-                GEMINI AI
-            </div>
+        <h1>AI Speaker Transcription</h1>
 
-            <h1>Speech <span>→</span> Text</h1>
+        <p>
+            Record a conversation and identify each speaker automatically
+        </p>
+
+    </div>
+
+
+    <!-- Voice Orb -->
+
+    <div class="voice-orb" [class.recording]="isRecording()" [class.processing]="isTranscribing()">
+
+        <div class="orb-ring ring-1"></div>
+        <div class="orb-ring ring-2"></div>
+        <div class="orb-ring ring-3"></div>
+
+        <div class="orb-core">
+
+            @if (isTranscribing()) {
+
+            <span class="processing-icon">
+                ✨
+            </span>
+
+            } @else if (isRecording()) {
+
+            <span class="recording-icon">
+                🎙️
+            </span>
+
+            } @else {
+
+            <span>
+                🎤
+            </span>
+
+            }
+
+        </div>
+
+    </div>
+
+
+    <!-- Status -->
+
+    <div class="status">
+
+        @if (isRecording()) {
+
+        <span class="status-recording">
+            ● Recording conversation...
+        </span>
+
+        } @else if (isTranscribing()) {
+
+        <span class="status-processing">
+            ✨ Detecting speakers and converting speech...
+        </span>
+
+        } @else {
+
+        <span>
+            Ready to record
+        </span>
+
+        }
+
+    </div>
+
+
+    <!-- Controls -->
+
+    <div class="controls">
+
+        @if (!isRecording()) {
+
+        <button class="record-button" type="button" (click)="startRecording()" [disabled]="isTranscribing()">
+
+            <span>🎙️</span>
+
+            Start Recording
+
+        </button>
+
+        } @else {
+
+        <button class="stop-button" type="button" (click)="stopRecording()">
+
+            <span>⏹</span>
+
+            Stop Recording
+
+        </button>
+
+        }
+
+    </div>
+
+
+    <!-- Processing -->
+
+    @if (isTranscribing()) {
+
+    <div class="processing-card">
+
+        <div class="loader"></div>
+
+        <div>
+
+            <strong>
+                Processing conversation
+            </strong>
 
             <p>
-                Speak naturally. Let AI turn your voice into text.
+                Detecting different voices and generating transcript...
             </p>
 
         </div>
 
+    </div>
 
-        <!-- Voice Visualizer -->
-        <div class="voice-orb" [class.recording]="isRecording()" [class.processing]="isTranscribing()">
+    }
 
-            <div class="orb-ring ring-1"></div>
-            <div class="orb-ring ring-2"></div>
-            <div class="orb-ring ring-3"></div>
 
-            <div class="orb-core">
+    <!-- Speaker Legend -->
 
-                @if (isRecording()) {
+    @if (
+    !isTranscribing()
+    && Object.keys(speakerNames()).length > 0
+    ) {
 
-                <div class="mic-icon">
-                    🎙️
+    <div class="speaker-panel">
+
+        <div class="section-title">
+
+            <span>
+                Detected Speakers
+            </span>
+
+            <small>
+                Click a name to rename
+            </small>
+
+        </div>
+
+
+        <div class="speaker-list">
+
+            @for (
+            speaker of Object.keys(speakerNames());
+            track speaker
+            ) {
+
+            <div class="speaker-item">
+
+                <div class="speaker-avatar" [attr.data-speaker]="speaker">
+
+                    {{
+                    getSpeakerName(speaker)
+                    .charAt(0)
+                    .toUpperCase()
+                    }}
+
                 </div>
 
-                } @else if (isTranscribing()) {
 
-                <div class="processing-icon">
-                    ✦
-                </div>
+                @if (
+                editingSpeaker() === speaker
+                ) {
+
+                <input class="speaker-input" [value]="editingName()" (input)="onNameInput($event)"
+                    (keyup.enter)="saveRename(speaker)" (keyup.escape)="cancelRename()" autofocus />
+
+                <button class="save-name" type="button" (click)="saveRename(speaker)">
+                    ✓
+                </button>
+
+                <button class="cancel-name" type="button" (click)="cancelRename()">
+                    ×
+                </button>
 
                 } @else {
 
-                <div class="mic-icon">
-                    🎙️
-                </div>
+                <button class="speaker-name-button" type="button" (click)="startRename(speaker)">
+
+                    {{ getSpeakerName(speaker) }}
+
+                    <span class="edit-icon">
+                        ✎
+                    </span>
+
+                </button>
 
                 }
 
             </div>
 
-        </div>
-
-
-        <!-- Audio Wave -->
-        @if (isRecording()) {
-
-        <div class="waveform">
-
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-
-        </div>
-
-        }
-
-
-        <!-- Status -->
-        <div class="status">
-
-            @if (isRecording()) {
-
-            <div class="status-recording">
-                <span></span>
-                Listening...
-            </div>
-
-            <p>
-                Speak clearly into your microphone
-            </p>
-
-            } @else if (isTranscribing()) {
-
-            <div class="status-processing">
-                <span class="spinner"></span>
-                Processing with Gemini...
-            </div>
-
-            <p>
-                Converting your voice into text
-            </p>
-
-            } @else {
-
-            <div class="status-ready">
-                <span></span>
-                Ready to listen
-            </div>
-
-            <p>
-                Click the microphone and start speaking
-            </p>
-
             }
 
         </div>
-
-
-        <!-- Main Button -->
-        <button type="button" class="record-button" [class.stop]="isRecording()" [class.loading]="isTranscribing()"
-            [disabled]="isTranscribing()" (click)="isRecording() ? stopRecording() : startRecording()">
-
-            @if (isRecording()) {
-
-            <span class="button-icon">■</span>
-            <span>Stop Recording</span>
-
-            } @else if (isTranscribing()) {
-
-            <span class="button-icon">✦</span>
-            <span>Processing...</span>
-
-            } @else {
-
-            <span class="button-icon">🎙</span>
-            <span>Start Recording</span>
-
-            }
-
-        </button>
-
-
-        <!-- Transcript -->
-        @if (transcript()) {
-
-        <div class="transcript-card">
-
-            <div class="transcript-header">
-
-                <div>
-                    <span class="transcript-dot"></span>
-                    <span>TRANSCRIPT</span>
-                </div>
-
-                <span class="ai-label">
-                    AI GENERATED
-                </span>
-
-            </div>
-
-            <div class="transcript-content">
-                {{ transcript() }}
-            </div>
-
-        </div>
-
-        }
 
     </div>
+
+    }
+
+
+    <!-- Conversation -->
+
+    @if (chatMessages().length > 0) {
+
+    <div class="conversation">
+
+        <div class="conversation-header">
+
+            <div>
+
+                <h2>
+                    Conversation
+                </h2>
+
+                <p>
+                    {{
+                    chatMessages().length
+                    }}
+                    messages detected
+                </p>
+
+            </div>
+
+            <div class="live-indicator">
+                ● AI Transcript
+            </div>
+
+        </div>
+
+
+        <div class="messages">
+
+            @for (
+            message of chatMessages();
+            track trackMessage($index, message)
+            ) {
+
+            <div class="message-row" [attr.data-speaker]="message.speaker">
+
+                <div class="avatar">
+
+                    {{
+                    getSpeakerName(message.speaker)
+                    .charAt(0)
+                    .toUpperCase()
+                    }}
+
+                </div>
+
+
+                <div class="message-content">
+
+                    <div class="message-header">
+
+                        <button class="message-speaker" type="button" (click)="startRename(message.speaker)">
+
+                            {{
+                            getSpeakerName(message.speaker)
+                            }}
+
+                            <span>✎</span>
+
+                        </button>
+
+                    </div>
+
+
+                    <div class="message-bubble">
+
+                        {{ message.text }}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            }
+
+        </div>
+
+    </div>
+
+    }
+
+
+    <!-- Normal transcript -->
+
+    @if (
+    transcript()
+    && chatMessages().length === 0
+    && !isTranscribing()
+    ) {
+
+    <div class="transcript">
+
+        <h3>
+            Transcript
+        </h3>
+
+        <p>
+            {{ transcript() }}
+        </p>
+
+    </div>
+
+    }
 
 </div>
